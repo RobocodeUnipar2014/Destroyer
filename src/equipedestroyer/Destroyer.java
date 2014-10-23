@@ -18,7 +18,7 @@ import robocode.WinEvent;
 
 /**
  * 
- * @author Administrador
+ * @author Equipe Destroyer 
  */
 public class Destroyer extends Robot {
 
@@ -44,7 +44,7 @@ public class Destroyer extends Robot {
 				gunTurnAmt = -10;
 			}
 			if (count > 5) {
-				gunTurnAmt = 50;
+				gunTurnAmt = 40;
 			}
 			if (count > 20) {
 				trackName = null;
@@ -64,7 +64,7 @@ public class Destroyer extends Robot {
 		gunTurnAmt = normalRelativeAngleDegrees(event.getBearing()
 				+ (getHeading() - getRadarHeading()));
 		turnGunRight(gunTurnAmt);
-		fire(3);
+		atirar(null, null, event);
 		
 	}
 
@@ -78,14 +78,14 @@ public class Destroyer extends Robot {
 
 			turnGunRight(gunTurnAmt);
 			turnRight(e.getBearing());
-			ahead(e.getDistance() - 140);
+			ahead(e.getDistance() -140);
 			return;
 		}
 		//vira a arma e atira no robo localizado
 		gunTurnAmt = normalRelativeAngleDegrees(e.getBearing()
 				+ (getHeading() - getRadarHeading()));
 		turnGunRight(gunTurnAmt);
-		fire(3);
+		atirar(e, null , null);
 		
 		
 		if (e.getDistance() < 100) {
@@ -97,6 +97,9 @@ public class Destroyer extends Robot {
 		}
 		scan();
 	}
+
+
+	
 	//qnd bate em outro robo, se vira para ele atira e anda a frente
 	public void onHitRobot(HitRobotEvent e) {
 		if (trackName != null && !trackName.equals(e.getName())) {
@@ -107,8 +110,8 @@ public class Destroyer extends Robot {
 		gunTurnAmt = normalRelativeAngleDegrees(e.getBearing()
 				+ (getHeading() - getRadarHeading()));
 		turnGunRight(gunTurnAmt);
-		fire(3);
-		ahead(50);
+		atirar(null, e, null);
+		ahead(20);
 	}
  // qnd ganha, gira para os lados
 	public void onWin(WinEvent e) {
@@ -117,6 +120,8 @@ public class Destroyer extends Robot {
 			turnLeft(3600);
 		}
 	}
+	
+	//reverter a direção
 	public void reverseDirection() {
 		if (movingForward) {
 			back(40000);
@@ -126,8 +131,23 @@ public class Destroyer extends Robot {
 			movingForward = true;
 		}
 	}
+	
 	public void onHitWall(HitWallEvent e) {
-		//reverte a direção qnd atingido
+		//reverte a direção qnd bate na parede
 		reverseDirection();
 	}
+	
+	//atira com força diferente dependendo da vida do inimigo
+	public void atirar(ScannedRobotEvent e, HitRobotEvent f, HitByBulletEvent h) {
+		if(e.getEnergy()>80){
+			fireBullet(3);
+		}
+		if(e.getEnergy()>50){
+			fireBullet(2);
+		}
+		if(e.getEnergy()>20){
+			fireBullet(1);
+		}
+	}
 }
+
